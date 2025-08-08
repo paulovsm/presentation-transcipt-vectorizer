@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  ppt-transcript-service:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+      - VERTEX_AI_LOCATION=${VERTEX_AI_LOCATION:-us-central1}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - CHROMA_DB_PATH=/app/data/chroma_db
+      - CHROMA_COLLECTION_NAME=${CHROMA_COLLECTION_NAME:-presentation_transcriptions}
+      - DIFY_API_URL=${DIFY_API_URL}
+      - DIFY_API_KEY=${DIFY_API_KEY}
+      - DIFY_DATASET_ID=${DIFY_DATASET_ID}
+      - DIFY_WORKFLOW_API_KEY=${DIFY_WORKFLOW_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - API_HOST=0.0.0.0
+      - API_PORT=8001
+      - API_RELOAD=false
+      - API_WORKERS=4
+      - API_TIMEOUT_KEEP_ALIVE=60
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/app/credentials.json:ro
+    restart: unless-stopped
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
