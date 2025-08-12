@@ -91,6 +91,10 @@ async def upload_presentation_file(
     language_code: str = "pt-BR",
     detailed_analysis: bool = True,
     dataset_name: Optional[str] = None,
+    # Novos parâmetros
+    workstream: Optional[str] = None,
+    bpml_l1: Optional[str] = None,
+    bpml_l2: Optional[str] = None,
     orchestrator: PresentationOrchestrator = Depends(get_orchestrator)
 ):
     """
@@ -139,7 +143,11 @@ async def upload_presentation_file(
             author=author,
             presentation_type=presentation_type,
             language_code=language_code,
-            detailed_analysis=detailed_analysis
+            detailed_analysis=detailed_analysis,
+            # Novos campos
+            workstream=workstream,
+            bpml_l1=bpml_l1,
+            bpml_l2=bpml_l2
         )
         
         # Gera ID da transcrição que será criada

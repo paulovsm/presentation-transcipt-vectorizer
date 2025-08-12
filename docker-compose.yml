@@ -23,7 +23,7 @@ services:
       - API_WORKERS=4
       - API_TIMEOUT_KEEP_ALIVE=60
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://redis:6380
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -40,7 +40,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"  # Porta externa 6380 para evitar conflitos
     volumes:
       - redis_data:/data
     restart: unless-stopped

@@ -72,6 +72,10 @@ class TranscriptionRequest(BaseModel):
     presentation_type: Optional[str] = None
     language_code: str = "pt-BR"
     detailed_analysis: bool = True  # Se deve fazer análise detalhada de elementos
+    # Novos campos
+    workstream: Optional[str] = None
+    bpml_l1: Optional[str] = None
+    bpml_l2: Optional[str] = None
 
 
 class TranscriptionResponse(BaseModel):

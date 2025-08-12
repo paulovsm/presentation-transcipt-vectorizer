@@ -60,7 +60,11 @@ class PresentationOrchestrator:
                 author=request.author,
                 presentation_type=request.presentation_type,
                 language_code=request.language_code,
-                status=TranscriptionStatus.PROCESSING
+                status=TranscriptionStatus.PROCESSING,
+                # Novos campos
+                workstream=request.workstream,
+                bpml_l1=request.bpml_l1,
+                bpml_l2=request.bpml_l2
             )
             
             # 2. Extração de slides
@@ -275,7 +279,11 @@ class PresentationOrchestrator:
                 "presentation_type": transcription.presentation_metadata.presentation_type or "",
                 "total_slides": transcription.presentation_metadata.total_slides,
                 "key_concepts": json.dumps(transcription.key_concepts),
-                "language": transcription.presentation_metadata.language
+                "language": transcription.presentation_metadata.language,
+                # Novos campos
+                "workstream": request.workstream,
+                "bpml_l1": request.bpml_l1,
+                "bpml_l2": request.bpml_l2
             }
             
             await self.vector_service.add_document(
@@ -291,7 +299,11 @@ class PresentationOrchestrator:
                     "content_type": "slide",
                     "slide_number": slide.slide_number,
                     "slide_title": slide.slide_title or "",
-                    "presentation_title": transcription.presentation_metadata.title or ""
+                    "presentation_title": transcription.presentation_metadata.title or "",
+                    # Novos campos
+                    "workstream": request.workstream,
+                    "bpml_l1": request.bpml_l1,
+                    "bpml_l2": request.bpml_l2
                 }
                 
                 slide_text = f"{slide.slide_title}\n\n{slide.slide_summary}"
@@ -378,7 +390,11 @@ Resumo: {slide.slide_summary}
                     "presentation_type": transcription.presentation_metadata.presentation_type or "",
                     "processing_date": datetime.utcnow().isoformat(),
                     "content_type": "slide",
-                    "language": transcription.presentation_metadata.language
+                    "language": transcription.presentation_metadata.language,
+                    # Novos campos
+                    "workstream": request.workstream,
+                    "bpml_l1": request.bpml_l1,
+                    "bpml_l2": request.bpml_l2
                 }
                 
                 logger.info(f"Preparando envio do slide {slide.slide_number} com metadados: {json.dumps(slide_metadata, indent=2, ensure_ascii=False)}")
@@ -416,7 +432,11 @@ DETALHAMENTO ADICIONAL:
                 "presentation_type": transcription.presentation_metadata.presentation_type or "",
                 "processing_date": datetime.utcnow().isoformat(),
                 "content_type": "summary",
-                "language": transcription.presentation_metadata.language
+                "language": transcription.presentation_metadata.language,
+                # Novos campos
+                "workstream": request.workstream,
+                "bpml_l1": request.bpml_l1,
+                "bpml_l2": request.bpml_l2
             }
             
             logger.info(f"Preparando envio do resumo executivo com metadados: {json.dumps(summary_metadata, indent=2, ensure_ascii=False)}")

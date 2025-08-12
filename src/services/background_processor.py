@@ -33,7 +33,7 @@ class BackgroundProcessor:
     """
     
     def __init__(self):
-        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6380")
         self.redis_client: Optional[redis.Redis] = None
         self.orchestrator = PresentationOrchestrator()
         self.executor = ThreadPoolExecutor(max_workers=2)  # Pool dedicado para operações CPU-intensivas

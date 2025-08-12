@@ -46,7 +46,11 @@ class FirestoreService:
         author: Optional[str] = None,
         presentation_type: Optional[str] = None,
         language_code: str = "pt-BR",
-        status: TranscriptionStatus = TranscriptionStatus.PENDING
+        status: TranscriptionStatus = TranscriptionStatus.PENDING,
+        # Novos campos
+        workstream: Optional[str] = None,
+        bpml_l1: Optional[str] = None,
+        bpml_l2: Optional[str] = None
     ) -> None:
         """
         Cria registro inicial da apresentação no Firestore
@@ -62,6 +66,10 @@ class FirestoreService:
                 "language_code": language_code,
                 "status": status.value,
                 "processing_status": ProcessingStatus.PENDING.value,
+                # Novos campos
+                "workstream": workstream,
+                "bpml_l1": bpml_l1,
+                "bpml_l2": bpml_l2,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow(),
                 "slides_count": None,
