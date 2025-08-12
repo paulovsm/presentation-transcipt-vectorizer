@@ -92,6 +92,7 @@ async def upload_presentation_file(
     detailed_analysis: bool = True,
     dataset_name: Optional[str] = None,
     # Novos parâmetros
+    meeting_id: Optional[str] = None,
     workstream: Optional[str] = None,
     bpml_l1: Optional[str] = None,
     bpml_l2: Optional[str] = None,
@@ -145,6 +146,7 @@ async def upload_presentation_file(
             language_code=language_code,
             detailed_analysis=detailed_analysis,
             # Novos campos
+            meeting_id=meeting_id,
             workstream=workstream,
             bpml_l1=bpml_l1,
             bpml_l2=bpml_l2

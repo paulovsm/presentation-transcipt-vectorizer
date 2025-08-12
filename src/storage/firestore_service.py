@@ -48,6 +48,7 @@ class FirestoreService:
         language_code: str = "pt-BR",
         status: TranscriptionStatus = TranscriptionStatus.PENDING,
         # Novos campos
+        meeting_id: Optional[str] = None,
         workstream: Optional[str] = None,
         bpml_l1: Optional[str] = None,
         bpml_l2: Optional[str] = None
@@ -56,6 +57,15 @@ class FirestoreService:
         Cria registro inicial da apresentação no Firestore
         """
         try:
+            # Converte strings separadas por vírgula em listas para bpml_l1 e bpml_l2
+            bpml_l1_list = []
+            if bpml_l1:
+                bpml_l1_list = [item.strip() for item in bpml_l1.split(',') if item.strip()]
+            
+            bpml_l2_list = []
+            if bpml_l2:
+                bpml_l2_list = [item.strip() for item in bpml_l2.split(',') if item.strip()]
+            
             doc_data = {
                 "transcription_id": transcription_id,
                 "file_name": file_name,
@@ -66,10 +76,11 @@ class FirestoreService:
                 "language_code": language_code,
                 "status": status.value,
                 "processing_status": ProcessingStatus.PENDING.value,
-                # Novos campos
+                # Novos campos - convertidos para listas
+                "meeting_id": meeting_id,
                 "workstream": workstream,
-                "bpml_l1": bpml_l1,
-                "bpml_l2": bpml_l2,
+                "bpml_l1": bpml_l1_list,
+                "bpml_l2": bpml_l2_list,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow(),
                 "slides_count": None,

@@ -62,6 +62,7 @@ class PresentationOrchestrator:
                 language_code=request.language_code,
                 status=TranscriptionStatus.PROCESSING,
                 # Novos campos
+                meeting_id=request.meeting_id,
                 workstream=request.workstream,
                 bpml_l1=request.bpml_l1,
                 bpml_l2=request.bpml_l2
@@ -147,6 +148,7 @@ class PresentationOrchestrator:
                     await self._integrate_with_dify(
                         transcription_id,
                         presentation_transcription,
+                        request,  # Adiciona request para acessar os campos
                         dataset_name  # None => serviço usará default_dataset_id
                     )
                 else:
@@ -322,6 +324,7 @@ class PresentationOrchestrator:
         self, 
         transcription_id: str, 
         transcription: PresentationTranscription, 
+        request: TranscriptionRequest,  # Adicionado request para acessar os campos
         dataset_name: Optional[str] = None
     ):
         """
@@ -380,6 +383,21 @@ Resumo: {slide.slide_summary}
                 slide_document_name = f"{transcription.presentation_metadata.title}_Slide_{slide.slide_number:02d}"
                 
                 # Metadados específicos do slide
+                # Converte bpml_l1 e bpml_l2 para listas se forem strings
+                bpml_l1_list = []
+                if request.bpml_l1:
+                    if isinstance(request.bpml_l1, str):
+                        bpml_l1_list = [item.strip() for item in request.bpml_l1.split(',') if item.strip()]
+                    else:
+                        bpml_l1_list = request.bpml_l1
+                
+                bpml_l2_list = []
+                if request.bpml_l2:
+                    if isinstance(request.bpml_l2, str):
+                        bpml_l2_list = [item.strip() for item in request.bpml_l2.split(',') if item.strip()]
+                    else:
+                        bpml_l2_list = request.bpml_l2
+                
                 slide_metadata = {
                     "transcription_id": transcription_id,
                     "presentation_title": transcription.presentation_metadata.title,
@@ -391,10 +409,11 @@ Resumo: {slide.slide_summary}
                     "processing_date": datetime.utcnow().isoformat(),
                     "content_type": "slide",
                     "language": transcription.presentation_metadata.language,
-                    # Novos campos
+                    # Novos campos - armazenados como listas
+                    "meeting_id": request.meeting_id,
                     "workstream": request.workstream,
-                    "bpml_l1": request.bpml_l1,
-                    "bpml_l2": request.bpml_l2
+                    "bpml_l1": bpml_l1_list,
+                    "bpml_l2": bpml_l2_list
                 }
                 
                 logger.info(f"Preparando envio do slide {slide.slide_number} com metadados: {json.dumps(slide_metadata, indent=2, ensure_ascii=False)}")
@@ -424,6 +443,21 @@ DETALHAMENTO ADICIONAL:
 - Idioma: {transcription.presentation_metadata.language}
 """
             
+            # Converte bpml_l1 e bpml_l2 para listas se forem strings (para summary)
+            bpml_l1_list = []
+            if request.bpml_l1:
+                if isinstance(request.bpml_l1, str):
+                    bpml_l1_list = [item.strip() for item in request.bpml_l1.split(',') if item.strip()]
+                else:
+                    bpml_l1_list = request.bpml_l1
+            
+            bpml_l2_list = []
+            if request.bpml_l2:
+                if isinstance(request.bpml_l2, str):
+                    bpml_l2_list = [item.strip() for item in request.bpml_l2.split(',') if item.strip()]
+                else:
+                    bpml_l2_list = request.bpml_l2
+            
             summary_metadata = {
                 "transcription_id": transcription_id,
                 "presentation_title": transcription.presentation_metadata.title,
@@ -433,10 +467,11 @@ DETALHAMENTO ADICIONAL:
                 "processing_date": datetime.utcnow().isoformat(),
                 "content_type": "summary",
                 "language": transcription.presentation_metadata.language,
-                # Novos campos
+                # Novos campos - armazenados como listas
+                "meeting_id": request.meeting_id,
                 "workstream": request.workstream,
-                "bpml_l1": request.bpml_l1,
-                "bpml_l2": request.bpml_l2
+                "bpml_l1": bpml_l1_list,
+                "bpml_l2": bpml_l2_list
             }
             
             logger.info(f"Preparando envio do resumo executivo com metadados: {json.dumps(summary_metadata, indent=2, ensure_ascii=False)}")
