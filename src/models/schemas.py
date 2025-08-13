@@ -77,6 +77,7 @@ class TranscriptionRequest(BaseModel):
     workstream: Optional[str] = None
     bpml_l1: Optional[str] = None
     bpml_l2: Optional[str] = None
+    project: Optional[str] = None
 
 
 class TranscriptionResponse(BaseModel):

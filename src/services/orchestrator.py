@@ -7,6 +7,7 @@ import logging
 import json
 
 from ..config.settings import settings
+from ..utils.id_generator import generate_transcription_id
 from ..models.schemas import (
     TranscriptionRequest, TranscriptionResponse, TranscriptionStatus,
     ProcessedPresentation, ProcessingStatus, SearchQuery, SearchResponse,
@@ -45,7 +46,12 @@ class PresentationOrchestrator:
         Processa um arquivo de apresentação através de todo o pipeline
         """
         if transcription_id is None:
-            transcription_id = str(uuid.uuid4())
+            # Gera ID personalizado no formato [workstream]_[YYYYMMDD]_[meeting_id]
+            transcription_id = generate_transcription_id(
+                workstream=request.workstream,
+                meeting_date=request.presentation_date,  # Para apresentações, usa presentation_date
+                meeting_id=request.meeting_id
+            )
         start_time = datetime.utcnow()
         
         try:

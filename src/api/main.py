@@ -13,6 +13,7 @@ import logging
 import asyncio
 
 from ..config.settings import settings
+from ..utils.id_generator import generate_transcription_id
 from ..models.schemas import (
     TranscriptionRequest, TranscriptionResponse, SearchQuery, SearchResponse,
     UploadResponse, ProcessedPresentation, DifySearchRequest, PresentationFormat,
@@ -96,6 +97,7 @@ async def upload_presentation_file(
     workstream: Optional[str] = None,
     bpml_l1: Optional[str] = None,
     bpml_l2: Optional[str] = None,
+    project: Optional[str] = None,
     orchestrator: PresentationOrchestrator = Depends(get_orchestrator)
 ):
     """
@@ -149,11 +151,16 @@ async def upload_presentation_file(
             meeting_id=meeting_id,
             workstream=workstream,
             bpml_l1=bpml_l1,
-            bpml_l2=bpml_l2
+            bpml_l2=bpml_l2,
+            project=project
         )
         
-        # Gera ID da transcrição que será criada
-        transcription_id = str(uuid.uuid4())
+        # Gera ID da transcrição no formato personalizado: [workstream]_[YYYYMMDD]_[meeting_id]
+        transcription_id = generate_transcription_id(
+            workstream=workstream,
+            meeting_date=presentation_date,
+            meeting_id=meeting_id
+        )
         
         # Fallback: se dataset_name não informado, usar dataset padrão das settings (se definido)
         if not dataset_name:
