@@ -137,12 +137,14 @@ async def upload_presentation_file(
         
         async with aiofiles.open(temp_file_path, 'wb') as temp_file:
             await temp_file.write(content)
+            
+        presentation_date = datetime.utcnow()
         
         # Prepara request de transcrição
         transcription_request = TranscriptionRequest(
             file_name=file.filename,
             presentation_title=presentation_title,
-            presentation_date=datetime.utcnow(),
+            presentation_date=presentation_date,
             author=author,
             presentation_type=presentation_type,
             language_code=language_code,

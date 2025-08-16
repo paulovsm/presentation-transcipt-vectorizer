@@ -40,7 +40,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6380:6379"  # Porta externa 6380 para evitar conflitos
+      - "6379:6379"  # Porta externa 6380 para evitar conflitos
     volumes:
       - redis_data:/data
     restart: unless-stopped
